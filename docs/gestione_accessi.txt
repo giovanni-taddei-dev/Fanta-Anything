@@ -1,0 +1,35 @@
+Fanta-Anything - Accesso Utenti (Leggero)
+
+Scopo: Definire il flusso di accesso utenti usando un approccio semplice e senza login, lasciando la possibilità di aggiungere login via email in futuro.
+
+Ruoli:
+
+Host: Crea il FantaAnything e definisce gli eventi.
+
+Partecipante: Inserisce le proprie previsioni.
+
+Meccanismo di Accesso:
+
+Link unico: Un solo link per tutti gli utenti: https://fanta-anything.app/fanta/{fanta_id}
+
+All'accesso, viene chiesto: “Chi sei?”
+
+L'utente seleziona un nickname (precedentemente inserito alla creazione del FantaAnything) oppure può scrivere un nuovo nickname.
+
+Nessuna email, password o account richiesti.
+
+La responsabilità di usare nickname corretti è lasciata al rapporto di fiducia tra giocatori.
+
+Future-Proofing:
+
+L'architettura deve poter supportare in futuro un login tramite email con magic link, senza compromettere il flusso leggero attuale.
+
+Vantaggi:
+
+Massima semplicità e frizione minima.
+
+Zero complessità backend per autenticazione.
+
+Allineato alla filosofia di Fanta-Anything: rapido, divertente, privato.
+
+Nessun dato sensibile raccolto al momento.

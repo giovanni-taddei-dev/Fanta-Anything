@@ -1,0 +1,34 @@
+FANTA-ANYTHING — DESCRIZIONE DELL'IDEA
+===============================
+
+Fanta-Anything è un gioco sociale e leggero di previsioni, pensato per gruppi
+privati (famiglia, amici, colleghi) che vogliono divertirsi attorno a un
+evento reale, senza alcun coinvolgimento di denaro.
+
+L'idea nasce dal concetto del "fantacalcio", ma applicato a qualsiasi tipo
+di evento della vita reale: una nascita, un matrimonio, una vacanza,
+un esame, una serata, o qualsiasi situazione che si presti a fare
+previsioni per gioco.
+
+Un utente (l'host) crea un evento e definisce una serie di domande o
+previsioni, ciascuna con opzioni predefinite (es. “Maschio / Femmina”,
+“Nome A / Nome B”, ecc.). Gli altri partecipanti inseriscono le proprie
+previsioni prima di una scadenza.
+
+Al termine dell'evento, l'host inserisce i risultati reali e l'app calcola
+automaticamente i punteggi, mostrando una classifica finale.
+I punti non hanno alcun valore reale: servono solo a rendere il gioco più
+divertente e competitivo.
+
+Fanta-Anything non è una piattaforma di scommesse, ma un gioco di intrattenimento
+sociale, privato e informale, pensato per creare momenti di condivisione e
+leggerezza.
+
+Il focus principale è:
+- semplicità
+- divertimento immediato
+- nessuna frizione tecnica o burocratica
+- nessuna monetizzazione
+
+Fanta-Anything è pensata come un progetto esplorativo, utile sia come prodotto
+ludico sia come palestra di sviluppo rapido e sperimentazione.

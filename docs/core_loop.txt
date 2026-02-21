@@ -1,0 +1,5 @@
+Un fanta-host crea un fanta-anything con un set di eventi
+I partecipanti inseriscono le loro scelte
+Gli eventi reali accadono
+Il fanta-host segna sull'app l'esito degli eventi
+L'app mostra la classifica

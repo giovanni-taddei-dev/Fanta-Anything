@@ -1,0 +1,78 @@
+FANTA-ANYTHING — COSA NON SARÀ MAI
+================================
+
+Questo documento serve a proteggere il progetto da:
+- scope creep
+- over-engineering
+- decisioni premature
+- tentazioni da "già che ci sono"
+
+Se una feature viola uno dei punti sotto, va SCARTATA.
+
+
+IDENTITÀ & ACCOUNT
+------------------
+- NON avrà account utente
+- NON richiederà login o registrazione
+- NON avrà profili persistenti
+- NON avrà email, password o OAuth
+
+
+SOCIALE & COMMUNITY
+-------------------
+- NON sarà un social network
+- NON avrà feed, commenti o like
+- NON avrà chat o messaggi privati
+- NON avrà amicizie o follower
+
+
+SCALABILITÀ & ENTERPRISE
+------------------------
+- NON sarà progettata per milioni di utenti
+- NON userà microservizi
+- NON userà architetture distribuite complesse
+- NON sarà “future-proof”
+- NON sarà pensata per alta affidabilità
+
+
+UX & PIATTAFORME
+----------------
+- NON sarà mobile-native
+- NON avrà app iOS o Android
+- NON sarà offline-first
+- NON supporterà PWA avanzate
+
+
+CONTROLLO & GOVERNANCE
+----------------------
+- NON avrà ruoli o permessi
+- NON avrà pannelli admin
+- NON avrà moderazione o audit log
+
+
+MONETIZZAZIONE & GROWTH
+-----------------------
+- NON avrà pubblicità
+- NON avrà pagamenti
+- NON avrà abbonamenti
+- NON ottimizzerà per retention o growth
+- NON avrà analytics avanzati
+
+
+TECNOLOGIA
+----------
+- NON userà stack complessi “per imparare”
+- NON sarà un playground di design pattern
+- NON userà tipizzazione end-to-end estrema
+- NON introdurrà astrazioni premature
+
+
+REGOLA FINALE
+-------------
+Se una feature:
+1. Viola uno dei punti sopra
+2. Non serve per giocare ORA
+3. Aggiunge un concetto mentale nuovo
+4. È spinta dal “so farla”
+
+Allora va ELIMINATA senza rimorsi.

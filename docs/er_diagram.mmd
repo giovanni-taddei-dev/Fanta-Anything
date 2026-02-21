@@ -1,0 +1,40 @@
+erDiagram
+    FANTA_ANYTHING {
+        string id
+        string title
+        string description
+        datetime created_at
+        string status
+    }
+
+    EVENTO {
+        string id
+        string question
+    }
+
+    OPZIONE {
+        string id
+        string label
+        boolean is_verified
+    }
+
+    PARTECIPANTE {
+        string id
+        string display_name
+    }
+
+    SCELTA {
+        string id
+        datetime created_at
+    }
+
+    %% Relazioni
+    FANTA_ANYTHING ||--o{ EVENTO : contiene
+    EVENTO ||--o{ OPZIONE : ha
+
+    FANTA_ANYTHING ||--o{ PARTECIPANTE : include
+    FANTA_ANYTHING ||--|| PARTECIPANTE : host
+
+    PARTECIPANTE ||--o{ SCELTA : fa
+    EVENTO ||--o{ SCELTA : riceve
+    OPZIONE ||--o{ SCELTA : selezionata

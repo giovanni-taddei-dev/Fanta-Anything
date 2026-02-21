@@ -1,0 +1,40 @@
+==============================
+FANTA-ANYTHING – MVP SCOPE
+==============================
+
+DENTRO (1) – Must-Have
+----------------------
+- Creazione di un FantaAnything (contenitore)
+- Inserimento di eventi
+- Inserimento risultati reali
+- Calcolo punteggi e visualizzazione classifica
+- Aggiunta di nuovi eventi
+- Aggiunta di nuove opzioni a un evento
+- Eliminazione di eventi (anche se ci sono voti, avviso che i voti persi dovranno essere reinseriti)
+
+FUORI (2) – No-Go
+-----------------
+- Login / registrazione / profili persistenti
+- Feed social, like, commenti, chat
+- Architetture complesse, microservizi
+
+FORSE PIÙ AVANTI (3) – Nice-to-Have
+-----------------------------------
+- Modifica o rimozione di opzioni già create
+- Modifica di eventi già creati
+- Temi grafici / personalizzazioni leggere
+- Monetizzazione (anche semplice, tipo a donazioni)
+
+==============================
+USO DELLA CHECKLIST
+==============================
+Ogni volta che pensi di aggiungere una feature:
+- È "Dentro"? ✅ -> va fatta subito
+- È "Fuori"? ❌ -> NON farla
+- È "Forse più avanti"? 🕒 -> segnala ma ignora per ora
+
+Questa checklist serve a proteggere il progetto dal feature creep e a mantenere il focus sul core loop: 
+1. Creazione del FantaAnything
+2. Inserimento previsioni da parte dei partecipanti
+3. Inserimento risultati reali dall’host
+4. Calcolo punteggi e visualizzazione classifica
