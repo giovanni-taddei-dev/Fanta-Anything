@@ -2,6 +2,8 @@
 
 A social prediction game platform for private groups. Users create custom "fantasy" leagues for any real-life event (wedding, exam, sports match, etc.), make predictions, and earn points based on actual results.
 
+Fanta-Anything is conceived as an exploratory project, useful both as a fun product and as a playground for rapid development and experimentation.
+
 ## Architecture
 
 - **Frontend**: React 19 + Vite 7, served on port 5000
@@ -38,4 +40,17 @@ Configured as a static site deployment:
 
 - No authentication (uses link + nickname approach to minimize friction)
 - The backend is in early development; no database connected yet
-- ER model entities: FantaAnything, Evento, Opzione, Partecipante, Scelta
+- ER model entities: FantaAnything, Event, Option, Participant, Choice
+
+## Interaction Guidelines for the Agent
+
+1. **Architectural explanations**: Every time a new technology, framework, or design pattern is introduced, briefly explain the "why" behind that choice and its advantages. Do not assume the user is familiar with frameworks outside of ML.
+
+2. **Didactic code review**: Write comments in code to explain the logic of non-obvious sections. If the user proposes outdated or incorrect solutions, correct them by explaining the current best practice.
+
+3. **Focus on DX (Developer Experience)**: Prefer modern, AI-friendly tools that minimize boilerplate.
+
+## Language Conventions
+
+- All code and anything code-related (schemas, models, variable names, comments) must be in English.
+- Conversation with the user can be in Italian.
