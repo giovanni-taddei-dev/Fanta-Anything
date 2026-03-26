@@ -1,0 +1,27 @@
+FANTA-ANYTHING — TECH STACK
+
+Frontend
+React
+Vite
+
+Backend
+Python
+FastAPI
+Pydantic
+SQLModel
+Uvicorn
+
+Database
+SQLite
+
+API
+REST
+
+Version Control
+Git
+GitHub
+
+Deployment (TBD)
+Railway
+Render
+"Fly.io" 
