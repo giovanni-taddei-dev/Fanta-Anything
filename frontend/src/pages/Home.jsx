@@ -31,10 +31,15 @@ export default function Home() {
           Il fantacalcio di qualsiasi evento della vita reale. Nascite,
           matrimoni, viaggi, serate — fai le tue previsioni e sfida chi conosci.
         </p>
-        {/* Link to sample game so you can explore the UI immediately */}
-        <Link to={`/fanta/${SAMPLE_GAME_ID}`} className="btn btn-outline">
-          Vedi una partita di esempio →
-        </Link>
+        <div className="home-hero-actions">
+          <Link to="/crea" className="btn btn-primary">
+            + Crea un nuovo FantaAnything
+          </Link>
+          {/* Link to sample game so you can explore the UI immediately */}
+          <Link to={`/fanta/${SAMPLE_GAME_ID}`} className="btn btn-outline">
+            Vedi una partita di esempio →
+          </Link>
+        </div>
       </div>
 
       <div className="home-body">

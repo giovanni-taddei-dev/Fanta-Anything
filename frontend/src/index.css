@@ -127,6 +127,12 @@ a { color: var(--color-primary); text-decoration: none; }
   line-height: 1.6;
 }
 
+.home-hero-actions {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .home-body {
   padding: 32px 16px 48px;
   max-width: 600px;
@@ -574,3 +580,221 @@ a { color: var(--color-primary); text-decoration: none; }
 .submitted-icon { font-size: 3rem; margin-bottom: 12px; }
 .submitted-card h2 { margin-bottom: 8px; }
 .submitted-card p { color: var(--color-text-muted); font-size: 0.95rem; }
+
+/* ─── Create game page ───────────────────────────────────────────────────────── */
+.create-page {
+  min-height: 100vh;
+}
+
+.create-header {
+  background: linear-gradient(135deg, #4c1d95, var(--color-primary));
+  color: #fff;
+  padding: 34px 20px 28px;
+}
+
+.create-header-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.create-eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.78;
+  margin-bottom: 6px;
+}
+
+.create-header h1 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.create-header p {
+  opacity: 0.88;
+  max-width: 540px;
+  line-height: 1.5;
+}
+
+.create-body {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px 16px 48px;
+}
+
+.create-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.create-progress {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.create-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.create-section h2 {
+  font-size: 1.1rem;
+}
+
+.create-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.create-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.field input {
+  padding: 11px 12px;
+}
+
+.field textarea {
+  padding: 12px;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.join-mode-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.choice-chip {
+  border: 2px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-bg);
+  padding: 8px 14px;
+  font-size: 0.88rem;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.choice-chip.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.question-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.question-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #fafafa;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.question-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.question-index {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.question-remove {
+  border: none;
+  background: none;
+  color: var(--color-danger);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.question-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.create-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .create-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .create-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .create-section-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .create-actions {
+    flex-direction: column-reverse;
+  }
+}
