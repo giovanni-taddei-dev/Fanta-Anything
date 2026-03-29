@@ -1,0 +1,36 @@
+FANTA-ANYTHING - GESTIONE BRANCHES GITHUB
+=========================================
+
+Questo documento descrive come vengono gestiti i rami GitHub del progetto.
+
+BRANCH PRINCIPALI
+-----------------
+
+1) master
+- Ramo stabile principale.
+- Contiene solo codice validato e pronto come riferimento ufficiale.
+
+2) develop
+- Ramo di integrazione generale.
+- Qui confluiscono i lavori prima di arrivare su master.
+
+BRANCH OPERATIVE PER AMBIENTE
+-----------------------------
+
+3) develop-cursor
+- Ramo dedicato ai lavori svolti su Cursor.
+- Serve a separare in modo chiaro le modifiche fatte in questo ambiente.
+
+4) develop-replit
+- Ramo dedicato ai lavori svolti su Replit.
+- Serve a separare in modo chiaro le modifiche fatte in questo ambiente.
+
+REGOLA OPERATIVA
+----------------
+
+- Lavori su Cursor -> usa develop-cursor
+- Lavori su Replit -> usa develop-replit
+- Integrazione condivisa -> develop
+- Rilascio/stato stabile di riferimento -> master
+
+Obiettivo: mantenere ordine, tracciabilita' e separazione dei flussi di lavoro per ambiente.
