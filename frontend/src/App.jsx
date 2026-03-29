@@ -3,6 +3,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import GamePage from "./pages/GamePage";
+import CreateGamePage from "./pages/CreateGamePage";
 import "./App.css";
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/crea" element={<CreateGamePage />} />
         {/*
           :id is a dynamic segment — GamePage reads it with useParams()
           to know which game to display.
