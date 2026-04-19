@@ -1,5 +1,5 @@
 ================================================================================
-FANTA-ANYTHING — PROMPT ZERO-SHOT PER CLAUDE ARTIFACTS
+FANTA-ANYTHING — PROMPT ZERO-SHOT
 ================================================================================
 
 Realizza un'applicazione web completa e funzionante chiamata "Fanta-Anything".
@@ -410,30 +410,6 @@ schermi da 375px in su.
 Tono visivo: leggero, giocoso, moderno. Non un'app enterprise. Colori vivaci
 ma non aggressivi. Uso generoso di emoji per rendere l'interfaccia più
 espressiva e informale.
-
-Palette suggerita:
-- Sfondo: lilla chiarissimo (#f5f3ff)
-- Accento primario: viola (#7c3aed)
-- Superficie card: bianco puro
-- Testo primario: blu-notte (#1e1b4b)
-- Testo secondario: grigio (#6b7280)
-- Successo: verde (#10b981)
-- Errore: rosso (#ef4444)
-
-Tipografia: system-ui o qualsiasi sans-serif di sistema. No Google Fonts
-o font esterni per mantenere il caricamento veloce.
-
-Border radius generosi (card arrotondate). Ombre leggere. Transizioni morbide
-sui bottoni e sulle selezioni.
-
-I bottoni radio delle opzioni devono essere custom: niente input[type=radio]
-nativo. Un cerchio vuoto diventa cerchio con pallino viola quando selezionato.
-
-L'header delle pagine della partita e della creazione deve avere uno sfondo
-con gradiente viola che si estende fino in cima (no barra bianca in cima).
-
-La tab bar ("Previsioni" / "Classifica") deve essere sticky, cioè rimane
-visibile mentre si scrolla il contenuto.
 
 --------------------------------------------------------------------------------
 8. COSA NON IMPLEMENTARE

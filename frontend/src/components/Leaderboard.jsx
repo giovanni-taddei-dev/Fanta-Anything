@@ -48,7 +48,7 @@ export default function Leaderboard({ participants, events, choices, currentUser
                 <span className="leaderboard-host-badge">host</span>
               )}
               {isCurrentUser && (
-                <span className="leaderboard-host-badge" style={{ background: "#fef3c7", color: "#92400e" }}>
+                <span className="leaderboard-host-badge leaderboard-current-user-badge">
                   tu
                 </span>
               )}

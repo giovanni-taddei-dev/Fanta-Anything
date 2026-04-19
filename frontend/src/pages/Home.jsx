@@ -26,6 +26,7 @@ export default function Home() {
   return (
     <div className="home">
       <div className="home-hero">
+        <p className="ui-status-pill">Stato UI: prototipo navigabile (dati mock)</p>
         <h1>Fanta-Anything 🎲</h1>
         <p>
           Il fantacalcio di qualsiasi evento della vita reale. Nascite,

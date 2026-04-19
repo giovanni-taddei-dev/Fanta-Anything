@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+
+const MAX_QUESTIONS = 8;
 
 function createEmptyQuestion(id) {
   return {
@@ -16,11 +18,68 @@ export default function CreateGamePage() {
   const [deadline, setDeadline] = useState("");
   const [joinMode, setJoinMode] = useState("invite");
   const [questions, setQuestions] = useState([createEmptyQuestion(1)]);
+  const [formFeedback, setFormFeedback] = useState(null);
+  const [showValidationHints, setShowValidationHints] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const filledQuestionsCount = useMemo(
     () => questions.filter((q) => q.title.trim().length > 0).length,
     [questions]
   );
+  const isMaxQuestionsReached = questions.length >= MAX_QUESTIONS;
+
+  const validation = useMemo(() => {
+    const errors = [];
+    const warnings = [];
+    const now = new Date();
+    const trimmedHostName = hostName.trim();
+    const trimmedTitle = title.trim();
+
+    if (!trimmedHostName) errors.push("Inserisci il nome dell'host.");
+    if (!trimmedTitle) errors.push("Inserisci un titolo per la partita.");
+    if (!deadline) {
+      errors.push("Imposta la scadenza per le previsioni.");
+    } else if (new Date(deadline) <= now) {
+      errors.push("La scadenza deve essere nel futuro.");
+    }
+
+    if (questions.length === 0) errors.push("Aggiungi almeno una domanda.");
+
+    const invalidQuestionIndexes = questions
+      .map((q, idx) => {
+        const hasTitle = q.title.trim().length > 0;
+        const filledOptions = q.options.filter((option) => option.trim().length > 0);
+        if (!hasTitle || filledOptions.length < 2) return idx + 1;
+        return null;
+      })
+      .filter(Boolean);
+
+    if (invalidQuestionIndexes.length > 0) {
+      errors.push(
+        `Completa domanda e almeno 2 opzioni per: ${invalidQuestionIndexes
+          .map((idx) => `#${idx}`)
+          .join(", ")}.`
+      );
+    }
+
+    if (description.trim().length > 180) {
+      warnings.push("La descrizione e lunga: prova a restare entro 180 caratteri.");
+    }
+
+    return {
+      errors,
+      warnings,
+      canSubmit: errors.length === 0,
+    };
+  }, [deadline, description, hostName, questions, title]);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timeoutId = window.setTimeout(() => {
+      setToast(null);
+    }, 3500);
+    return () => window.clearTimeout(timeoutId);
+  }, [toast]);
 
   function handleQuestionTitleChange(questionId, value) {
     setQuestions((prev) =>
@@ -40,6 +99,7 @@ export default function CreateGamePage() {
   }
 
   function handleAddQuestion() {
+    if (isMaxQuestionsReached) return;
     setQuestions((prev) => [...prev, createEmptyQuestion(prev.length + 1)]);
   }
 
@@ -52,14 +112,47 @@ export default function CreateGamePage() {
 
   function handleSubmitMock(event) {
     event.preventDefault();
+    setShowValidationHints(true);
+    if (!validation.canSubmit) {
+      setFormFeedback({
+        type: "error",
+        message: "Completa i campi richiesti prima di creare la partita.",
+      });
+      setToast({
+        type: "error",
+        message: "Partita non creata: controlla i campi evidenziati.",
+      });
+      return;
+    }
+    setFormFeedback({
+      type: "success",
+      message: "Mock salvato: in seguito collegheremo la creazione al backend.",
+    });
+    setToast({
+      type: "success",
+      message: "Partita creata nel mock con successo.",
+    });
     // Mockup only: backend integration will be wired later.
-    window.alert(
-      "Mockup UI: salvataggio non ancora collegato al back-end."
-    );
+  }
+
+  function handleSaveDraft() {
+    setFormFeedback({
+      type: "info",
+      message: "Bozza salvata in locale (mock): nessun dato persistito su backend.",
+    });
+    setToast({
+      type: "info",
+      message: "Bozza salvata in locale.",
+    });
   }
 
   return (
     <div className="create-page">
+      {!!toast && (
+        <div className={`toast toast-${toast.type}`} role="status" aria-live="polite">
+          {toast.message}
+        </div>
+      )}
       <header className="create-header">
         <div className="create-header-inner">
           <p className="create-eyebrow">Nuovo FantaAnything</p>
@@ -81,7 +174,32 @@ export default function CreateGamePage() {
           </span>
         </div>
 
-        <form className="create-form" onSubmit={handleSubmitMock}>
+        {!!formFeedback && (
+          <div className={`form-alert form-alert-${formFeedback.type}`}>
+            {formFeedback.message}
+          </div>
+        )}
+
+        {showValidationHints && !validation.canSubmit && (
+          <div className="form-alert form-alert-error">
+            <p className="form-alert-title">Ti manca ancora questo:</p>
+            <ul>
+              {validation.errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {validation.warnings.length > 0 && (
+          <div className="form-alert form-alert-warning">
+            {validation.warnings.map((warning) => (
+              <p key={warning}>{warning}</p>
+            ))}
+          </div>
+        )}
+
+        <form className="create-form" onSubmit={handleSubmitMock} noValidate>
           <section className="card create-section">
             <h2>Chi sei?</h2>
             <p className="text-muted">
@@ -163,10 +281,14 @@ export default function CreateGamePage() {
                 type="button"
                 className="btn btn-outline"
                 onClick={handleAddQuestion}
+                disabled={isMaxQuestionsReached}
               >
                 + Aggiungi domanda
               </button>
             </div>
+            <p className="text-muted">
+              Inserisci almeno 1 domanda completa. Massimo {MAX_QUESTIONS} domande.
+            </p>
 
             <div className="question-list">
               {questions.map((question, index) => (
@@ -223,13 +345,12 @@ export default function CreateGamePage() {
           </section>
 
           <div className="create-actions">
-            <button type="button" className="btn btn-ghost">
+            <button type="button" className="btn btn-ghost" onClick={handleSaveDraft}>
               Salva bozza
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!hostName.trim()}
             >
               Crea partita
             </button>
