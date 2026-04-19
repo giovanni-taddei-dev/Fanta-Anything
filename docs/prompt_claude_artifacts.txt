@@ -1,0 +1,524 @@
+================================================================================
+FANTA-ANYTHING — PROMPT ZERO-SHOT PER CLAUDE ARTIFACTS
+================================================================================
+
+Realizza un'applicazione web completa e funzionante chiamata "Fanta-Anything".
+Di seguito trovi tutto ciò che devi sapere per costruirla. Leggi ogni sezione
+attentamente prima di scrivere una riga di codice.
+
+--------------------------------------------------------------------------------
+1. COS'È FANTA-ANYTHING
+--------------------------------------------------------------------------------
+
+Fanta-Anything è un gioco sociale di previsioni per gruppi privati — amici,
+familiari, colleghi. Il concetto è quello del fantacalcio, ma applicato a
+qualsiasi evento della vita reale: una nascita, un matrimonio, un esame,
+un viaggio, una serata in compagnia, qualsiasi cosa che si presti a fare
+previsioni per gioco.
+
+Un utente speciale (chiamato "host") crea una partita e definisce un insieme
+di domande a risposta multipla. Gli altri partecipanti (anche l'host può
+giocare) inseriscono le proprie previsioni prima di una scadenza. Quando
+l'evento reale accade, l'host segna le risposte corrette sull'app, che
+calcola automaticamente i punteggi e mostra la classifica finale.
+
+I punti non hanno alcun valore reale o monetario: servono solo a rendere
+il gioco più divertente e competitivo all'interno del gruppo.
+
+Fanta-Anything NON è una piattaforma di scommesse. È un gioco di
+intrattenimento sociale, privato, informale.
+
+I valori fondamentali del prodotto sono:
+- Semplicità assoluta: chiunque deve poter iniziare a giocare in 30 secondi
+- Divertimento immediato: nessuna burocrazia, nessun tutorial necessario
+- Frizione zero: niente account, niente password, niente email
+- Privato per natura: funziona solo tra persone che si conoscono e si fidano
+
+--------------------------------------------------------------------------------
+2. I RUOLI
+--------------------------------------------------------------------------------
+
+Esistono due ruoli nell'applicazione:
+
+HOST
+- È la persona che crea la partita
+- Definisce il titolo, la descrizione, la scadenza per le previsioni
+- Aggiunge le domande e le opzioni di risposta
+- Dopo che l'evento reale è accaduto, segna quali risposte erano corrette
+- L'host può anche partecipare al gioco come giocatore normale
+- È identificato solo dal suo nickname, come tutti gli altri
+
+PARTECIPANTE
+- È qualsiasi persona che riceve il link della partita
+- Accede al link, seleziona il proprio nickname, inserisce le proprie previsioni
+- Può vedere la classifica
+- Non può modificare le domande né segnare i risultati
+
+--------------------------------------------------------------------------------
+3. IL MECCANISMO DI ACCESSO (NIENTE LOGIN)
+--------------------------------------------------------------------------------
+
+Questa è una delle decisioni più importanti del progetto: non esiste login,
+registrazione, email, password o OAuth di alcun tipo.
+
+Il flusso è il seguente:
+
+Alla creazione della partita, l'host inserisce:
+- Il proprio nickname (es. "Marco")
+- I nickname degli altri partecipanti invitati (es. "Giulia", "Luca", "Sara")
+
+L'app genera un link univoco del tipo: /fanta/{id_partita}
+
+Tutti i partecipanti accedono tramite questo stesso link. Quando aprono
+la pagina, viene loro chiesto "Chi sei?" e vedono l'elenco dei nickname
+preimpostati. Cliccano sul proprio nome e iniziano a giocare.
+
+Se qualcuno vuole accedere con un nickname non presente nella lista, può
+digitarne uno nuovo. Non c'è alcun controllo di autenticazione: la
+responsabilità di usare il proprio nickname è lasciata al rapporto di
+fiducia tra i giocatori, che si conoscono già.
+
+L'host riconosce il proprio nickname nell'elenco e, dopo averlo selezionato,
+vede le stesse funzionalità degli altri più le azioni riservate all'host
+(segnare i risultati, aggiungere domande, eliminare domande).
+
+IMPORTANTE: il sistema deve essere progettato in modo che in futuro si possa
+aggiungere un login via email con magic link, senza dover riscrivere
+l'architettura. Per ora però non implementarlo.
+
+--------------------------------------------------------------------------------
+4. IL MODELLO DATI
+--------------------------------------------------------------------------------
+
+Queste sono le entità principali dell'applicazione e le loro relazioni:
+
+FANTA_ANYTHING (la "partita")
+- id: identificatore univoco (stringa)
+- title: nome della partita (es. "FantaBimbo 2026 🍼")
+- description: testo libero che spiega il contesto (es. "Marco e Chiara
+  aspettano il loro primo figlio!")
+- deadline: data e ora entro cui i partecipanti possono votare
+- status: "open" (previsioni ancora accettate) oppure "closed" (risultati
+  rivelati, classifica disponibile)
+- created_at: timestamp di creazione
+
+EVENTO (una singola domanda all'interno della partita)
+- id: identificatore univoco
+- fanta_id: riferimento alla partita
+- question: il testo della domanda (es. "Maschio o femmina?")
+  Le domande sono aperte: possono riguardare qualsiasi aspetto dell'evento
+
+OPZIONE (una delle risposte possibili a un evento)
+- id: identificatore univoco
+- event_id: riferimento all'evento
+- label: testo dell'opzione (es. "Maschio 👦", "Femmina 👧")
+- is_correct: null (risultato non ancora rivelato), true (risposta corretta),
+  false (risposta sbagliata). Nota: una sola opzione per evento può essere
+  true, tutte le altre sono false.
+
+PARTECIPANTE
+- id: identificatore univoco
+- fanta_id: riferimento alla partita
+- display_name: il nickname del giocatore
+- is_host: booleano, true se è l'host della partita
+
+SCELTA (il voto di un partecipante su un evento)
+- id: identificatore univoco
+- participant_id: riferimento al partecipante
+- event_id: riferimento all'evento
+- option_id: l'opzione scelta dal partecipante
+- created_at: timestamp
+
+RELAZIONI:
+- Una partita contiene molti eventi
+- Ogni evento ha molte opzioni
+- Una partita ha molti partecipanti (uno dei quali è l'host)
+- Ogni partecipante fa una scelta per ogni evento
+- Ogni scelta seleziona esattamente una opzione di un evento
+
+CALCOLO DEL PUNTEGGIO:
+Il punteggio di un partecipante è il numero di risposte corrette.
+Una risposta è corretta quando l'opzione scelta dal partecipante ha
+is_correct = true.
+Gli eventi per cui non è ancora stato rivelato il risultato (is_correct = null
+su tutte le opzioni) non contribuiscono al punteggio.
+
+--------------------------------------------------------------------------------
+5. LE SCHERMATE DELL'APPLICAZIONE
+--------------------------------------------------------------------------------
+
+L'applicazione è composta da tre aree principali:
+
+5A. HOME PAGE  (percorso: /)
+5B. CREAZIONE PARTITA  (percorso: /crea)
+5C. PAGINA DI GIOCO  (percorso: /fanta/:id)
+
+Seguono le specifiche dettagliate di ciascuna.
+
+--------------------------------------------------------------------------------
+5A. HOME PAGE
+--------------------------------------------------------------------------------
+
+La home è la schermata di ingresso. Deve essere semplice e immediata.
+
+Contiene:
+- Un header con il nome "Fanta-Anything 🎲" e una breve tagline che spiega
+  il concetto in una frase (es. "Il fantacalcio di qualsiasi evento della
+  vita reale")
+- Un pulsante primario: "+ Crea un nuovo FantaAnything" → porta a /crea
+- Un pulsante secondario: "Vedi una partita di esempio →" → porta a una
+  partita con dati mock precaricati, così l'utente può esplorare l'app
+  senza dover creare nulla
+- Una sezione "Come funziona" con tre passi:
+    1. L'host crea il gioco — definisce le domande e invita i partecipanti
+    2. I partecipanti votano — ognuno inserisce le proprie previsioni
+    3. L'host rivela i risultati — l'app calcola i punteggi e mostra la classifica
+
+Il tono è leggero e giocoso. Nessun wall of text.
+
+--------------------------------------------------------------------------------
+5B. CREAZIONE PARTITA (flusso host)
+--------------------------------------------------------------------------------
+
+Questa pagina è un form che l'host compila per creare la partita.
+
+SEZIONE 1 — Chi sei?
+L'host deve identificarsi prima di creare la partita.
+- Campo testo: "Nome / nickname host" (es. "Gio", "FantaMaster")
+- È obbligatorio. Il bottone "Crea partita" è disabilitato finché non è
+  compilato.
+
+SEZIONE 2 — Informazioni base
+- Campo testo: "Titolo partita" (es. "Fanta Weekend a Barcellona") — obbligatorio
+- Campo datetime-local: "Scadenza previsioni" — obbligatorio. Indica quando
+  i partecipanti non potranno più votare.
+- Campo textarea: "Descrizione" — opzionale. Contestualizza la partita per
+  i partecipanti (es. "Siamo 8 persone per 4 giorni a Barcellona. Chi indovina
+  più cose vince una cena offerta dagli altri!").
+
+SEZIONE 3 — Partecipanti
+- L'host inserisce i nickname dei partecipanti che inviterà.
+- Si tratta di un campo testo con aggiunta dinamica: l'host scrive un nickname
+  e preme Invio o un bottone "Aggiungi", il nickname appare come chip/tag
+  rimovibile. Ne possono essere aggiunti quanti se ne vuole.
+- Nota: l'host stesso non deve aggiungersi qui, è già il creatore.
+- Esempio di risultato: [Giulia ✕] [Luca ✕] [Sara ✕] [Francesco ✕]
+
+SEZIONE 4 — Domande
+Questa è la sezione più importante. L'host definisce le domande della partita.
+
+Ogni domanda è composta da:
+- Un campo testo per il testo della domanda (es. "Chi arriverà in ritardo
+  al brunch di domenica?") — obbligatorio
+- Un elenco dinamico di opzioni di risposta. Di default ne compaiono due
+  (es. "Opzione 1", "Opzione 2"). L'host può:
+    - Modificare il testo di ogni opzione
+    - Aggiungere ulteriori opzioni con un bottone "+ Aggiungi opzione"
+    - Rimuovere un'opzione (minimo 2 opzioni per domanda)
+  Esempio: "Maschio 👦" / "Femmina 👧"
+  Esempio: "Meno di 3 kg" / "Tra 3 e 3,5 kg" / "Più di 3,5 kg"
+
+L'host può aggiungere più domande con un bottone "+ Aggiungi domanda".
+Può rimuovere domande (minimo 1 domanda).
+Mostra un contatore tipo "2/4 domande compilate".
+
+SEZIONE 5 — Modalità di accesso
+Toggle o scelta tra:
+- "Link di invito": tutti accedono tramite lo stesso link (default)
+- "Codice stanza": i partecipanti inseriscono un codice per accedere
+
+Per ora entrambe le modalità possono puntare allo stesso link; la
+distinzione è puramente visiva nel mockup.
+
+AZIONI FINALI
+- Bottone "Salva bozza": salva senza pubblicare (per ora può essere un no-op
+  visivo o salvare in localStorage)
+- Bottone "Crea partita" (primario): salva e porta l'host direttamente alla
+  pagina della partita appena creata (/fanta/:id)
+
+Dopo la creazione, l'host deve poter copiare il link da condividere con
+i partecipanti. Mostra quindi un banner o un modal con il link e un bottone
+"Copia link".
+
+--------------------------------------------------------------------------------
+5C. PAGINA DI GIOCO (percorso: /fanta/:id)
+--------------------------------------------------------------------------------
+
+Questa è la schermata centrale del prodotto. Tutti i partecipanti la vedono
+dopo aver cliccato sul link condiviso dall'host.
+
+Ha un'intestazione fissa in cima con:
+- Titolo della partita
+- Descrizione
+- Badge informativi: scadenza, numero di partecipanti, numero di domande
+- Indicatore di stato: "Partita aperta 🟢" oppure "Risultati rivelati 🏆"
+
+Sotto l'intestazione ci sono due tab navigabili:
+- "🗳️ Previsioni" — la scheda di voto
+- "🏆 Classifica" — la classifica
+
+---
+STEP 1: IDENTIFICAZIONE (appare prima di qualsiasi altra azione)
+
+Quando un utente arriva sulla pagina, se non si è ancora identificato,
+vede una card in cima che chiede "Chi sei? 👋".
+
+Mostra l'elenco dei nickname preimpostati dall'host come chip/bottoni
+cliccabili. L'utente clicca sul proprio nome.
+
+Sotto l'elenco c'è un separatore "oppure" e un campo testo con bottone
+"Entra" per inserire un nickname non in lista.
+
+Appena l'utente si identifica:
+- La card "Chi sei?" scompare
+- Appare una piccola barra in cima al corpo della pagina con scritto
+  "Stai giocando come [NomeScelto]" e un link "Cambia" per reimpostare
+  l'identità
+- Se il nickname coincide con quello dell'host, vengono sbloccate le
+  funzioni riservate all'host
+
+---
+STEP 2: SCHEDA "PREVISIONI"
+
+Mostra la lista di tutte le domande della partita. Ogni domanda è una
+card che contiene:
+- Il numero della domanda (es. "Domanda 1")
+- Il testo della domanda
+- Le opzioni come elementi cliccabili con indicatore radio personalizzato
+  (non usare il radio button nativo del browser, usane uno custom stilizzato)
+
+Quando l'utente clicca su un'opzione, questa si evidenzia visivamente
+come "selezionata". Può cambiare idea finché non invia.
+
+In fondo alla lista c'è:
+- Un contatore "X / Y domande risposte"
+- Un bottone "Invia le mie previsioni ✉️" (disabilitato se nessuna
+  domanda è stata risposta)
+
+Dopo l'invio:
+- Appare una card di conferma con un'emoji festosa 🎉 e il messaggio
+  "Previsioni inviate! Hai risposto a X domande su Y."
+- Le domande diventano non modificabili (read-only)
+
+Caso speciale — partita chiusa:
+Se la partita è nello stato "closed" (l'host ha rivelato i risultati),
+le opzioni mostrano la risposta corretta con un segno ✅ e le risposte
+sbagliate in grigio. Il partecipante vede chiaramente cosa aveva scelto
+e se era giusto o sbagliato.
+
+---
+STEP 3: FUNZIONI RISERVATE ALL'HOST (visibili solo dopo identificazione come host)
+
+Nella scheda "Previsioni", dopo l'elenco delle domande, l'host vede:
+
+Un pannello "Segna i risultati" che appare in aggiunta alle domande normali.
+Per ogni domanda, l'host può selezionare quale opzione è quella corretta
+(una sola per domanda). Finché non segna tutte le domande, il bottone
+"Pubblica risultati" è disabilitato.
+Quando preme "Pubblica risultati", lo stato della partita passa a "closed",
+le risposte corrette vengono registrate e la classifica diventa visibile
+a tutti.
+
+Funzioni aggiuntive visibili solo all'host:
+- Bottone "+ Aggiungi domanda" in cima all'elenco: apre un mini-form
+  inline per aggiungere una nuova domanda alla partita (testo + opzioni)
+- Ogni domanda ha un bottone "Elimina" (visibile solo all'host).
+  Se ci sono già voti su quella domanda, mostrare un avviso: "Attenzione:
+  eliminando questa domanda, i voti già inseriti su di essa andranno persi
+  e dovranno essere reinseriti dai partecipanti."
+
+---
+STEP 4: SCHEDA "CLASSIFICA"
+
+Se la partita è ancora aperta (nessun risultato rivelato):
+- Mostra un messaggio: "🕐 I risultati non sono ancora stati rivelati.
+  La classifica apparirà non appena l'host segnerà gli esiti."
+- Mostra comunque l'elenco di chi ha già votato (senza i punteggi),
+  così i partecipanti sanno chi ha partecipato.
+
+Se la partita è chiusa (risultati rivelati):
+- Mostra la classifica completa, ordinata per punteggio decrescente
+- Ogni riga contiene:
+    - Posizione (🥇 🥈 🥉 per i primi 3, poi numero)
+    - Nome del partecipante (con badge "host" se è l'host, badge "tu"
+      se coincide con l'utente corrente)
+    - Punteggio (numero intero di risposte corrette)
+- Le prime tre posizioni sono visivamente distinte (es. sfondo dorato
+  per il primo, argentato per il secondo, bronzo per il terzo)
+- Eventuale sezione di dettaglio: per ogni partecipante, mostra le
+  singole risposte con indicazione ✅ / ❌
+
+--------------------------------------------------------------------------------
+6. DATI MOCK PER LA DEMO
+--------------------------------------------------------------------------------
+
+L'applicazione deve includere una partita di esempio raggiungibile dalla home.
+Questi sono i dati da usare:
+
+PARTITA:
+- Titolo: "FantaBimbo 2026 🍼"
+- Descrizione: "Marco e Chiara aspettano il loro primo figlio! Fai le tue
+  previsioni prima del grande giorno."
+- Scadenza: 20 aprile 2026
+- Status: "open" (partita ancora aperta, nessun risultato rivelato)
+
+PARTECIPANTI:
+- Marco (host)
+- Giulia
+- Luca
+- Sara
+- Francesco
+
+DOMANDE E OPZIONI:
+1. "Maschio o femmina?"
+   - Maschio 👦
+   - Femmina 👧
+2. "Quanto peserà alla nascita?"
+   - Meno di 3 kg
+   - Tra 3 e 3,5 kg
+   - Più di 3,5 kg
+3. "Quando nascerà rispetto alla data prevista?"
+   - Prima del previsto ⏰
+   - Nella settimana prevista 📅
+   - Dopo il previsto 🐢
+4. "Come si chiamerà? (se femmina)"
+   - Sofia
+   - Giulia
+   - Emma
+   - Aurora
+   - Altro / Maschio → irrilevante
+
+VOTI GIÀ INSERITI (per simulare una partita in corso):
+Marco: Femmina, Tra 3 e 3,5 kg, Nella settimana prevista, Sofia
+Giulia: Femmina, Più di 3,5 kg, Prima del previsto, Giulia
+Luca: Maschio, Tra 3 e 3,5 kg, Dopo il previsto, Altro/Maschio
+Sara: Femmina, Meno di 3 kg, Nella settimana prevista, Emma
+Francesco: Maschio, Tra 3 e 3,5 kg, Nella settimana prevista, Aurora
+
+Nessuna risposta corretta è ancora stata segnata (is_correct = null
+per tutte le opzioni). La classifica mostra quindi il messaggio "risultati
+non ancora rivelati".
+
+--------------------------------------------------------------------------------
+7. UX E DESIGN
+--------------------------------------------------------------------------------
+
+L'applicazione è mobile-first. La maggior parte degli utenti aprirà il link
+direttamente dallo smartphone. Il layout deve funzionare perfettamente su
+schermi da 375px in su.
+
+Tono visivo: leggero, giocoso, moderno. Non un'app enterprise. Colori vivaci
+ma non aggressivi. Uso generoso di emoji per rendere l'interfaccia più
+espressiva e informale.
+
+Palette suggerita:
+- Sfondo: lilla chiarissimo (#f5f3ff)
+- Accento primario: viola (#7c3aed)
+- Superficie card: bianco puro
+- Testo primario: blu-notte (#1e1b4b)
+- Testo secondario: grigio (#6b7280)
+- Successo: verde (#10b981)
+- Errore: rosso (#ef4444)
+
+Tipografia: system-ui o qualsiasi sans-serif di sistema. No Google Fonts
+o font esterni per mantenere il caricamento veloce.
+
+Border radius generosi (card arrotondate). Ombre leggere. Transizioni morbide
+sui bottoni e sulle selezioni.
+
+I bottoni radio delle opzioni devono essere custom: niente input[type=radio]
+nativo. Un cerchio vuoto diventa cerchio con pallino viola quando selezionato.
+
+L'header delle pagine della partita e della creazione deve avere uno sfondo
+con gradiente viola che si estende fino in cima (no barra bianca in cima).
+
+La tab bar ("Previsioni" / "Classifica") deve essere sticky, cioè rimane
+visibile mentre si scrolla il contenuto.
+
+--------------------------------------------------------------------------------
+8. COSA NON IMPLEMENTARE
+--------------------------------------------------------------------------------
+
+Queste funzionalità sono esplicitamente fuori scope. Non aggiungerle anche
+se ti sembrano ovvie o utili. La semplicità è una priorità di prodotto.
+
+- Login, registrazione, profili persistenti, email, password, OAuth
+- Feed social, commenti, like, reazioni, chat tra partecipanti
+- Notifiche push o email
+- Analytics, dashboard di statistiche avanzate
+- Pannello di amministrazione
+- Ruoli e permessi complessi
+- Modalità offline o PWA avanzata
+- App mobile nativa (iOS / Android)
+- Monetizzazione, paywall, abbonamenti, pubblicità
+- Moderazione dei contenuti
+- Audit log
+- Microservizi o architetture distribuite
+- Tipizzazione end-to-end estrema
+- Internazionalizzazione (i18n) — l'app è in italiano
+
+Se una feature non compare nella sezione 5 (le schermate) o nella sezione
+MVP, non farla. La regola è: se non serve per giocare ORA, non va fatta.
+
+--------------------------------------------------------------------------------
+9. GESTIONE DELLO STATO (PERSISTENCE)
+--------------------------------------------------------------------------------
+
+Dato che questo è un prototipo funzionante ma senza backend completo,
+gestisci la persistenza così:
+
+- I dati mock della partita di esempio sono hardcodati nel codice
+- Per la creazione di nuove partite, puoi usare localStorage o un
+  semplice stato in memoria React (non è richiesto un vero database)
+- L'identificazione dell'utente (chi sei?) può essere salvata in
+  sessionStorage così non si perde al refresh della pagina
+- Le scelte/voti dell'utente possono essere salvate in localStorage
+  associati all'id della partita e al nickname
+
+--------------------------------------------------------------------------------
+10. COMPORTAMENTI EDGE CASE DA GESTIRE
+--------------------------------------------------------------------------------
+
+- Se l'utente accede a /fanta/ID-INESISTENTE, mostra una pagina di errore
+  semplice: "Partita non trovata. Controlla il link ricevuto."
+- Se la scadenza è passata e la partita è ancora "open", mostra un avviso
+  "Scadenza superata: le previsioni sono chiuse." e disabilita il voto.
+  L'host può ancora segnare i risultati.
+- Se un partecipante ha già votato e riapre la pagina, le sue scelte
+  devono essere ancora visibili (pre-caricate) e segnate come "già inviate".
+- Se l'host elimina una domanda che aveva voti, mostrare dialog di
+  conferma con avviso esplicito sui voti persi.
+- Se nessun partecipante ha ancora votato quando la partita è chiusa,
+  la classifica mostra tutti con punteggio 0.
+
+--------------------------------------------------------------------------------
+11. NAVIGAZIONE
+--------------------------------------------------------------------------------
+
+L'applicazione ha le seguenti rotte:
+
+/ → Home page
+/crea → Pagina di creazione partita
+/fanta/:id → Pagina di gioco della partita con quell'id
+
+La navigazione deve essere client-side (single page application).
+Nessun reload di pagina tra una schermata e l'altra.
+
+Dalla home: bottone "Crea" → /crea, bottone "Esempio" → /fanta/game-001
+Da /crea: dopo creazione → /fanta/:nuovo_id con banner "Link copiato"
+Da /fanta/:id: link "← Torna alla home" sempre visibile in alto
+
+--------------------------------------------------------------------------------
+RIEPILOGO FINALE
+--------------------------------------------------------------------------------
+
+Costruisci un'applicazione web completa per il gioco sociale Fanta-Anything.
+Le tre schermate principali sono: home, creazione partita, pagina di gioco.
+La pagina di gioco gestisce tre sotto-stati: identificazione, voto e classifica.
+Ci sono due ruoli: host (crea e rivela risultati) e partecipante (vota).
+Niente login: solo nickname selezionato da una lista preimpostata.
+I dati mock del "FantaBimbo 2026" devono essere presenti e navigabili.
+Design mobile-first, leggero, giocoso, viola come colore primario.
+Niente feature non elencate esplicitamente in questo documento.
+
+================================================================================
