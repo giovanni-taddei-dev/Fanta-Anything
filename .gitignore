@@ -1,0 +1,16 @@
+# Node
+node_modules/
+dist/
+.vite/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Ambiente locale
+.env.local
+.DS_Store
+
+# Output effimeri delle skill (explain-diff --html, design system persistiti)
+*.local.html
